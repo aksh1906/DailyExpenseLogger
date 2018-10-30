@@ -18,5 +18,24 @@
     <string name="skip_signin">Skip, sign in as guest instead</string>
     <string name="google_signin_text">SIGN IN WITH GOOGLE</string>
 
+    <!-- ========================================================================== -->
 
+    <!-- =============== MainActivity.java and activity_main.xml ================== -->
+    <string name="fab_menu_item_add_expense">Add expense</string>
+    <string name="fab_menu_item_add_income">Add income</string>
+
+    <!-- ========================================================================== -->
+
+    <!-- ========== AddExpenseActivity.java and activity_add_expense.xml ========== -->
+    <string name="expense_description_hint">Enter Description</string>
+    <string name="expense_amount_hint">Enter Amount</string>
+    <string name="recurring_expense_switch_off">Not a recurring expense</string>
+    <string name="recurring_expense_switch_on">Recurring expense</string>
+    <string name="date_label">Date</string>
+    <string name="time_label">Time</string>
+    <string name="frequency_label">Frequency</string>
+    <string name="recurring_start_date_label">Start Date</string>
+    <string name="recurring_start_time_label">Start Time</string>
+
+    <!-- ========================================================================== -->
 </resources>

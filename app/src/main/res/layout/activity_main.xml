@@ -29,13 +29,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_income"
+            app:fab_size="mini"
+            app:fab_label="@string/fab_menu_item_add_income"
             />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_menu_add_expense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_expense"/>
+            android:src="@drawable/ic_expense"
+            app:fab_size="mini"
+            app:fab_label="@string/fab_menu_item_add_expense"
+            />
 
     </com.github.clans.fab.FloatingActionMenu>
 
