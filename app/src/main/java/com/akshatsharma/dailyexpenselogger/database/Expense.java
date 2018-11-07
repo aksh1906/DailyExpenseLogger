@@ -8,8 +8,8 @@ import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "expenses"/*, foreignKeys = @ForeignKey(entity = RecurringExpenses.class, parentColumns = "recurring_id", childColumns = "recurring_id")*/)
-public class Expenses {
+@Entity(tableName = "expense"/*, foreignKeys = @ForeignKey(entity = RecurringExpense.class, parentColumns = "recurring_id", childColumns = "recurring_id")*/)
+public class Expense {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "expense_id")
@@ -21,14 +21,14 @@ public class Expenses {
 //    private int recurringId;
 
     @Ignore
-    public Expenses(String description, int amount, Date date/*, int recurringId*/) {
+    public Expense(String description, int amount, Date date/*, int recurringId*/) {
         this.description = description;
         this.amount = amount;
         this.date = date;
 //        this.recurringId = recurringId;
     }
 
-    public Expenses(int expenseId, String description, int amount, Date date/*, int recurringId*/) {
+    public Expense(int expenseId, String description, int amount, Date date/*, int recurringId*/) {
         this.expenseId = expenseId;
         this.description = description;
         this.amount = amount;
