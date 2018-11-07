@@ -4,9 +4,17 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -16,30 +24,70 @@ import java.util.Locale;
 
 
 public class AddExpenseActivity extends AppCompatActivity
-        implements View.OnClickListener {
+        implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
+    private Toolbar toolbar;
     private EditText datePicker, timePicker;
-    private int year, month, day, hour, minute;
+    private Spinner frequencySpinner;
+    private Switch recurringSwitch;
+    private TextView dateLabel, timeLabel, toolbarTitle;
+    private View convenienceView;
+    private LinearLayout frequencyLL;
+    private String[] frequencies = {"Daily","Weekdays", "Weekends", "Weekly", "Bi-Weekly", "Monthly", "Yearly"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
+        toolbar = findViewById(R.id.tbCreateExpense);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        recurringSwitch = findViewById(R.id.switch_recurring_expense);
         datePicker = findViewById(R.id.et_expense_date);
         timePicker = findViewById(R.id.et_expense_time);
+        frequencySpinner = findViewById(R.id.spinner_expense_frequency);
+        convenienceView = findViewById(R.id.view_layout_convenience);
+        frequencyLL = findViewById(R.id.ll_frequency);
+        dateLabel = findViewById(R.id.tv_date_label);
+        timeLabel = findViewById(R.id.tv_time_label);
 
+        createToolbar();
+
+        recurringSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                changeExpenseMode();
+            }
+        });
         datePicker.setOnClickListener(this);
         timePicker.setOnClickListener(this);
+        frequencySpinner.setOnItemSelectedListener(this);
 
         // Set the date of the expense to the current date by default
         datePicker.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
+        // Set the time of the expense to the current time by default
         timePicker.setText(new SimpleDateFormat("hh:mm ", Locale.getDefault()).format(new Date()));
+
+        // Populating the frequencySpinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, frequencies);
+        frequencySpinner.setAdapter(adapter);
+    }
+
+    // This creates the toolbar and adds the title
+    private void createToolbar() {
+        toolbar = findViewById(R.id.tbCreateIncome);
+        if(toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
+            toolbarTitle = findViewById(R.id.toolbar_title);
+            toolbarTitle.setText(R.string.income_toolbar_title);
+        }
     }
 
     @Override
     public void onClick(View v) {
         if(v == datePicker) {
+            int year, month, day;
             Calendar c = Calendar.getInstance();
             year = c.get(Calendar.YEAR);
             month = c.get(Calendar.MONTH);
@@ -55,6 +103,7 @@ public class AddExpenseActivity extends AppCompatActivity
         }
 
         if(v == timePicker) {
+            int hour, minute;
             Calendar c = Calendar.getInstance();
             hour = c.get(Calendar.HOUR_OF_DAY);
             minute = c.get(Calendar.MINUTE);
@@ -62,10 +111,37 @@ public class AddExpenseActivity extends AppCompatActivity
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    timePicker.setText(hourOfDay + ":" + minute);
+                    timePicker.setText(new StringBuilder().append(hourOfDay).append(":").append(minute));
                 }
-            }, hour, minute, false);
+            }, hour, minute, true);
             timePickerDialog.show();
         }
+    }
+
+    private void changeExpenseMode() {
+
+        if(recurringSwitch.isChecked()) {
+            convenienceView.setVisibility(View.GONE);
+            frequencyLL.setVisibility(View.VISIBLE);
+            frequencySpinner.setVisibility(View.VISIBLE);
+            dateLabel.setText(R.string.recurring_start_date_label);
+            timeLabel.setText(R.string.recurring_start_time_label);
+        } else {
+            convenienceView.setVisibility(View.VISIBLE);
+            frequencyLL.setVisibility(View.GONE);
+            frequencySpinner.setVisibility(View.GONE);
+            dateLabel.setText(R.string.date_label);
+            timeLabel.setText(R.string.time_label);
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        //
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        //
     }
 }

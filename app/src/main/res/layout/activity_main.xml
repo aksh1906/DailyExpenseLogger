@@ -14,6 +14,13 @@
         android:firstDayOfWeek="2"
         android:visibility="visible" />
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_expenses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:background="@android:color/white"/>
+
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_menu"
         android:layout_height="wrap_content"

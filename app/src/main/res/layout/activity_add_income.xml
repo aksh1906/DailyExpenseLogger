@@ -1,9 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddIncomeActivity">
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".AddIncomeActivity"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <include
+        android:id="@+id/tbCreateIncome"
+        layout="@layout/app_toolbar" />
+
+    <Switch
+        android:id="@+id/switch_recurring_income"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:checked="false"
+        android:text="@string/recurring_income_switch"
+        android:foreground="@drawable/ripple"
+        android:gravity="start"
+        android:textColor="@color/colorFontLight"
+        android:textSize="16sp"
+        />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_income_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+
+        android:focusableInTouchMode="true"
+        android:focusable="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_income_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:textColor="@color/colorFont"
+            android:hint="@string/expense_description_hint"
+            android:inputType="text"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_income_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="32dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_weight="1"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_income_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorFont"
+                android:hint="@string/expense_amount_hint"
+                android:maxLines="1"
+                android:inputType="number"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <View
+            android:id="@+id/view_layout_convenience"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:visibility="visible"/>
+
+        <LinearLayout
+            android:id="@+id/ll_frequency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="32dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_frequency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textSize="12sp"
+                android:textColor="@color/colorFont"
+                android:text="@string/frequency_label"
+                android:layout_gravity="start"
+                android:gravity="start" />
+
+            <Spinner
+                android:id="@+id/spinner_income_frequency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_gravity="end"
+                android:gravity="end"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="12dp">
+
+        <TextView
+            android:id="@+id/tv_date_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:textSize="12sp"
+            android:textColor="@color/colorFont"
+            android:text="@string/date_label"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:layout_gravity="start"/>
+
+        <TextView
+            android:id="@+id/tv_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/colorFont"
+            android:text="@string/time_label"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:layout_gravity="start"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="12dp">
+
+        <EditText
+            android:id="@+id/et_income_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/colorFont"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center"
+            />
+
+        <EditText
+            android:id="@+id/et_income_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/colorFont"
+            android:clickable="true"
+            android:focusable="false"
+            android:inputType="none"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_save_income"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded_corners"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:text="@string/save_button"
+        android:textSize="16sp"
+        android:textColor="@color/colorFontLight"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"/>
+
+</LinearLayout>

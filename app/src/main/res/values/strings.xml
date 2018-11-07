@@ -26,16 +26,19 @@
 
     <!-- ========================================================================== -->
 
-    <!-- ========== AddExpenseActivity.java and activity_add_expense.xml ========== -->
+    <!-- AddExpenseActivity.java, AddIncomeActivity.java, activity_add_expense.xml and activity_add_income.xml -->
     <string name="expense_description_hint">Enter Description</string>
     <string name="expense_amount_hint">Enter Amount</string>
-    <string name="recurring_expense_switch_off">Not a recurring expense</string>
-    <string name="recurring_expense_switch_on">Recurring expense</string>
+    <string name="recurring_expense_switch">Recurring Expense</string>
     <string name="date_label">Date</string>
     <string name="time_label">Time</string>
     <string name="frequency_label">Frequency</string>
     <string name="recurring_start_date_label">Start Date</string>
     <string name="recurring_start_time_label">Start Time</string>
+    <string name="save_button">Save</string>
+    <string name="recurring_income_switch">Recurring Income</string>
+    <string name="expense_toolbar_title">Add Expense</string>
+    <string name="income_toolbar_title">Add Income</string>
 
-    <!-- ========================================================================== -->
+    <!-- ===================================================================================================== -->
 </resources>
