@@ -139,4 +139,8 @@ public class AddIncomeActivity extends AppCompatActivity
     public void onNothingSelected(AdapterView<?> parent) {
         //
     }
+
+    public void test() {
+
+    }
 }

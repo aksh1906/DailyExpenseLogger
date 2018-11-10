@@ -14,8 +14,8 @@ import java.util.List;
 @Dao
 public interface ExpenseDao {
 
-    @Query("SELECT * FROM expense WHERE date = :date ORDER BY date")
-    LiveData<List<Expense>> loadAllExpenses(Date date);
+    @Query("SELECT * FROM expense WHERE date = :date ORDER BY expense_id")
+    LiveData<List<Expense>> loadAllExpenses(String date);
 
     @Insert
     void insertExpense(Expense expense);

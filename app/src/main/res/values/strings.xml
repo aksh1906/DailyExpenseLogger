@@ -39,6 +39,7 @@
     <string name="recurring_income_switch">Recurring Income</string>
     <string name="expense_toolbar_title">Add Expense</string>
     <string name="income_toolbar_title">Add Income</string>
+    <string name="update_button">Update</string>
 
     <!-- ===================================================================================================== -->
 </resources>

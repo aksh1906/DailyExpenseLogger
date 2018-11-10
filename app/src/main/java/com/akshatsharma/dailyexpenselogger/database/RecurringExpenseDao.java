@@ -15,7 +15,7 @@ public interface RecurringExpenseDao {
     @Update
     void updateRecurringExpense(RecurringExpense recurringExpense);
 
-    @Query("SELECT frequency FROM recurring_expense WHERE recurring_id = :recurringId")
-    LiveData<RecurringExpense> getFrequencyOfRecurringExpense(int recurringId);
+//    @Query("SELECT frequency FROM recurring_expense WHERE recurring_id = :recurringId")
+//    LiveData<RecurringExpense> getFrequencyOfRecurringExpense(int recurringId);
 
 }

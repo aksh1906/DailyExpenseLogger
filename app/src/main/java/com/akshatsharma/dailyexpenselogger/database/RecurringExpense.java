@@ -16,17 +16,17 @@ public class RecurringExpense {
     private int recurringId;
     private String frequency;
     @ColumnInfo(name = "auto_expense_date")
-    private Date autoExpenseDate;
+    private String autoExpenseDate;
 //    @ColumnInfo(name = "expense_id")
 //    private int expenseId;
 
     @Ignore
-    public RecurringExpense(String frequency, Date autoExpenseDate) {
+    public RecurringExpense(String frequency, String autoExpenseDate) {
         this.frequency = frequency;
         this.autoExpenseDate = autoExpenseDate;
     }
 
-    public RecurringExpense(int recurringId, String frequency, Date autoExpenseDate) {
+    public RecurringExpense(int recurringId, String frequency, String autoExpenseDate) {
         this.recurringId = recurringId;
         this.frequency = frequency;
         this.autoExpenseDate = autoExpenseDate;
@@ -48,11 +48,11 @@ public class RecurringExpense {
         this.frequency = frequency;
     }
 
-    public Date getAutoExpenseDate() {
+    public String getAutoExpenseDate() {
         return autoExpenseDate;
     }
 
-    public void setAutoExpenseDate(Date autoExpenseDate) {
+    public void setAutoExpenseDate(String autoExpenseDate) {
         this.autoExpenseDate = autoExpenseDate;
     }
 

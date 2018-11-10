@@ -4,12 +4,14 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 @Entity(tableName = "user")
 public class User {
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "user_name")
+    @NonNull
     private String userName;
     @ColumnInfo(name = "first_name")
     private String firstName;
