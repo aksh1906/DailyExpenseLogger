@@ -23,6 +23,8 @@
     <!-- =============== MainActivity.java and activity_main.xml ================== -->
     <string name="fab_menu_item_add_expense">Add expense</string>
     <string name="fab_menu_item_add_income">Add income</string>
+    <string name="toolbar_title">Daily Expense Logger</string>
+    <string name="edit_budget_dialog_title">Edit Budget</string>
 
     <!-- ========================================================================== -->
 

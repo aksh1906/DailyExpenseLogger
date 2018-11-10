@@ -38,16 +38,8 @@ public class AddIncomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_income);
 
-        recurringSwitch = findViewById(R.id.switch_recurring_income);
-        datePicker = findViewById(R.id.et_income_date);
-        timePicker = findViewById(R.id.et_income_time);
-        frequencySpinner = findViewById(R.id.spinner_income_frequency);
-        convenienceView = findViewById(R.id.view_layout_convenience);
-        frequencyLL = findViewById(R.id.ll_frequency);
-        dateLabel = findViewById(R.id.tv_date_label);
-        timeLabel = findViewById(R.id.tv_time_label);
-
-        createToolbar();
+        initViews();
+        setupToolbar();
 
         recurringSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -69,9 +61,20 @@ public class AddIncomeActivity extends AppCompatActivity
         frequencySpinner.setAdapter(adapter);
     }
 
-    // This creates the title and adds the toolbar
-    private void createToolbar() {
+    private void initViews() {
         toolbar = findViewById(R.id.tbCreateIncome);
+        recurringSwitch = findViewById(R.id.switch_recurring_income);
+        datePicker = findViewById(R.id.et_income_date);
+        timePicker = findViewById(R.id.et_income_time);
+        frequencySpinner = findViewById(R.id.spinner_income_frequency);
+        convenienceView = findViewById(R.id.view_layout_convenience);
+        frequencyLL = findViewById(R.id.ll_frequency);
+        dateLabel = findViewById(R.id.tv_date_label);
+        timeLabel = findViewById(R.id.tv_time_label);
+    }
+
+    // This creates the title and adds the toolbar
+    private void setupToolbar() {
         if(toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setTitle(null);

@@ -65,7 +65,7 @@ public class AddExpenseActivity extends AppCompatActivity
         setContentView(R.layout.activity_add_expense);
 
         initViews();
-        createToolbar();
+        setupToolbar();
         initListeners();
 
         // Initialize a database object
@@ -123,14 +123,11 @@ public class AddExpenseActivity extends AppCompatActivity
     }
 
     // This creates the toolbar and adds the title
-    private void createToolbar() {
-        toolbar = findViewById(R.id.tbCreateIncome);
-        if(toolbar != null) {
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle(null);
-            toolbarTitle = findViewById(R.id.toolbar_title);
-            toolbarTitle.setText(R.string.income_toolbar_title);
-        }
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        toolbarTitle.setText(R.string.expense_toolbar_title);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     }
 
     // This adds listeners to all relevant views

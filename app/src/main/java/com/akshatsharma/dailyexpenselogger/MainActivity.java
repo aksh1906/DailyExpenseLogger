@@ -2,33 +2,48 @@ package com.akshatsharma.dailyexpenselogger;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
-import com.akshatsharma.dailyexpenselogger.database.ExpenseDao;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements ExpenseAdapter.ItemClickListener {
 
+    private android.support.v7.widget.Toolbar toolbar;
+    private TextView toolbarTitle;
     private CalendarView calendarView;
     private RecyclerView recyclerView;
     private ExpenseAdapter adapter;
+    FloatingActionMenu floatingActionMenu;
+    private FloatingActionButton fabAddIncome, fabAddExpense;
 
     private AppDatabase database;
 
@@ -38,31 +53,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views
+        // Initialize views, listeners, toolbar and the recyclerview
         initViews();
+        initListeners();
+        setupToolbar();
+        setupRecyclerView();
 
 
-        // Set date on the calendar to the current date
+        // Set date on the calendar to the current date, and set its visibility to gone by default
         calendarView.setDate(System.currentTimeMillis(), false, true);
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                // call a method, pass the values of year, month, day in it
-                String message = dayOfMonth + "/" + month + "/" + year;
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set the layout for the RecyclerView to be a linear layout
-        // which measures and positions items within a RecyclerView into a linear list
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Initialize the adapter, and attach it to the RecyclerView
-        adapter = new ExpenseAdapter(this, this);
-        recyclerView.setAdapter(adapter);
-
-        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(decoration);
+        calendarView.setVisibility(View.GONE);
 
         // The touch helper to the RecyclerView helps it recognize when the user swipes on it.
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -86,18 +86,123 @@ public class MainActivity extends AppCompatActivity
             }
         }).attachToRecyclerView(recyclerView);
 
+        // Initialize a database object
         database = AppDatabase.getInstance(getApplicationContext());
-        retrieveExpenses();
+
+        // Get expenses for the current date by default
+        retrieveExpenses(getCurrentDate());
     }
 
     // Method used to initialize all views in the layout
     private void initViews() {
+        toolbar = findViewById(R.id.tbMainActivity);
+        toolbarTitle = findViewById(R.id.toolbar_title);
         calendarView = findViewById(R.id.cv_calendar);
         recyclerView = findViewById(R.id.rv_expenses);
+        floatingActionMenu = findViewById(R.id.fab_menu);
+        fabAddExpense = findViewById(R.id.fab_menu_add_expense);
+        fabAddIncome = findViewById(R.id.fab_menu_add_income);
     }
 
-    private void retrieveExpenses() {
-        LiveData<List<Expense>> expenses = database.expenseDao().loadAllExpenses(dateFromCalendarView());
+    // This method initializes all the relevant listeners
+    private void initListeners() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // call a method, pass the values of year, month, day in it
+                String date = convertToDateString(dayOfMonth, month, year);
+                retrieveExpenses(date);
+            }
+        });
+
+        fabAddExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start AddExpenseActivity
+                Intent addExpenseIntent = new Intent(MainActivity.this, AddExpenseActivity.class);
+                startActivity(addExpenseIntent);
+            }
+        });
+
+        fabAddIncome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start AddIncomeActivity
+                Intent addIncomeIntent = new Intent(MainActivity.this, AddIncomeActivity.class);
+                startActivity(addIncomeIntent);
+            }
+        });
+    }
+
+    // This method sets up the toolbar
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        toolbarTitle.setText(R.string.toolbar_title);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.open_calendar:
+                if (calendarView.getVisibility() == View.GONE) {
+                    calendarView.setVisibility(View.VISIBLE);
+                } else {
+                    calendarView.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.edit_budget:
+
+                // Create the alertdialog which will allow the user to edit his monthly budget
+                Context context = MainActivity.this;
+                LayoutInflater layoutInflater = LayoutInflater.from(context);
+                View view = layoutInflater.inflate(R.layout.edit_budget_dialog, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setView(view);
+
+                final EditText editBudgetEditText = view.findViewById(R.id.et_edit_budget);
+                alertDialogBuilder.setCancelable(true)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // get user input
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                editBudgetEditText.setHint("Placeholder for amount");
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // This method sets up the RecyclerView
+    private void setupRecyclerView() {
+        // Set the layout for the RecyclerView to be a linear layout
+        // which measures and positions items within a RecyclerView into a linear list
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize the adapter, and attach it to the RecyclerView
+        adapter = new ExpenseAdapter(this, this);
+        recyclerView.setAdapter(adapter);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(decoration);
+    }
+
+    private void retrieveExpenses(String date) {
+        LiveData<List<Expense>> expenses = database.expenseDao().loadAllExpenses(date);
         expenses.observe(this, new Observer<List<Expense>>() {
             @Override
             public void onChanged(@Nullable List<Expense> expenses) {
@@ -115,8 +220,25 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void changeDate(int year, int month, int dayOfMonth) {
-        // this method will change the displayed expenses based on the date that they were created on
+    private String convertToDateString(int dayOfMonth, int month, int year) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.YEAR, year);
+        Date dt = calendar.getTime();
+        String date = sdf.format(dt);
+        Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
+        return date;
+    }
 
+
+    private String getCurrentDate() {
+        Date dt = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String date = sdf.format(dt);
+        Toast.makeText(this, date, Toast.LENGTH_LONG).show();
+
+        return date;
     }
 }
