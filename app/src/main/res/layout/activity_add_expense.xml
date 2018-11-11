@@ -160,7 +160,8 @@
             android:text="@string/time_label"
             android:layout_weight="1"
             android:gravity="start"
-            android:layout_gravity="start"/>
+            android:layout_gravity="start"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
@@ -197,7 +198,8 @@
             android:clickable="true"
             android:focusable="false"
             android:inputType="none"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:visibility="invisible"/>
     </LinearLayout>
 
     <Button

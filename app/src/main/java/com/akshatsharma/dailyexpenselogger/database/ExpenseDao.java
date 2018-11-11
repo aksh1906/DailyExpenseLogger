@@ -28,4 +28,7 @@ public interface ExpenseDao {
 
     @Query("SELECT * FROM expense WHERE expense_id = :id")
     LiveData<Expense> loadExpenseById(int id);
+
+    @Query("SELECT * FROM expense WHERE expense_id = :id")
+    Expense loadExpense(int id);
 }

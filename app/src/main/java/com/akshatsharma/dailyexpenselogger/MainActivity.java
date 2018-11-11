@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views, listeners, toolbar and the recyclerview
+        // Initialize views, listeners, toolbar and the RecyclerView
         initViews();
         initListeners();
         setupToolbar();
@@ -300,12 +299,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClickListener(int itemId) {
-
+    public void onItemClickListener(final int itemId) {
+        Expense expense = database.expenseDao().loadExpense(itemId);
+        int amount = expense.getAmount();
+        Log.d("amt", String.valueOf(amount));
+        openActivityToEditValue(itemId, amount);
         // Start AddExpenseActivity, while adding the ItemId as an extra in the intent
-        Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-        intent.putExtra(AddExpenseActivity.EXTRA_EXPENSE_ID, itemId);
-        startActivity(intent);
+//        LiveData<Expense> expense = database.expenseDao().loadExpenseById(itemId);
+//        expense.observe(this, new Observer<Expense>() {
+//            @Override
+//            public void onChanged(@Nullable Expense expense) {
+//                int amount = expense.getAmount();
+//                openActivityToEditValue(itemId, amount);
+//            }
+//        });
     }
 
     private String convertToDateString(int dayOfMonth, int month, int year) {
@@ -343,6 +350,17 @@ public class MainActivity extends AppCompatActivity
                 database.userDao().updateUser(user);
             }
         });
+    }
 
+    private void openActivityToEditValue(int itemId, int amount) {
+        if(amount > 0) {
+            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+            intent.putExtra(AddExpenseActivity.EXTRA_EXPENSE_ID, itemId);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(MainActivity.this, AddIncomeActivity.class);
+            intent.putExtra(AddIncomeActivity.EXTRA_EXPENSE_ID, itemId);
+            startActivity(intent);
+        }
     }
 }

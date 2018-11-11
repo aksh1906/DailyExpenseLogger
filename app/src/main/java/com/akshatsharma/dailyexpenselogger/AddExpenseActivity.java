@@ -1,15 +1,15 @@
 package com.akshatsharma.dailyexpenselogger;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,14 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
 import com.akshatsharma.dailyexpenselogger.database.User;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,7 +37,7 @@ public class AddExpenseActivity extends AppCompatActivity
 
     // Extra for the expense ID to be received in the intent
     public static final String EXTRA_EXPENSE_ID = "extraExpenseId";
-    // Extra for the task ID to be received after rotation
+    // Extra for the expense ID to be received after rotation
     public static final String INSTANCE_EXPENSE_ID = "instanceExpenseId";
     // Constant for default expense id to be used when not in update mode
     private static final int DEFAULT_EXPENSE_ID = -1;
@@ -102,6 +99,18 @@ public class AddExpenseActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(INSTANCE_EXPENSE_ID, expenseId);
         super.onSaveInstanceState(outState);
@@ -130,6 +139,8 @@ public class AddExpenseActivity extends AppCompatActivity
         getSupportActionBar().setTitle(null);
         toolbarTitle.setText(R.string.expense_toolbar_title);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     // This adds listeners to all relevant views
@@ -141,7 +152,6 @@ public class AddExpenseActivity extends AppCompatActivity
             }
         });
         datePicker.setOnClickListener(this);
-        timePicker.setOnClickListener(this);
         frequencySpinner.setOnItemSelectedListener(this);
         saveButton.setOnClickListener(this);
     }
@@ -248,6 +258,11 @@ public class AddExpenseActivity extends AppCompatActivity
                     database.userDao().updateUser(user);
                 } else {
                     // update expense
+                    int originalExpense = database.expenseDao().loadExpense(expenseId).getAmount();
+                    int difference = amount - originalExpense;
+                    expensesThisMonth += difference;
+                    user.setTotalExpenditureThisMonth(expensesThisMonth);
+                    database.userDao().updateUser(user);
                     expense.setExpenseId(expenseId);
                     database.expenseDao().updateExpense(expense);
                 }

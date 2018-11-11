@@ -2,6 +2,7 @@ package com.akshatsharma.dailyexpenselogger;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,12 +43,26 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Expense expense = expenses.get(position);
         String description = expense.getDescription();
         int amount = expense.getAmount();
+        if(amount < 0) {
+            expenseViewHolder.expenseTypeView.setText(R.string.income_tv);
+            amount *= -1;
+            String amountString = "+ ₹" + String.valueOf(amount);
+            expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
+            expenseViewHolder.expenseAmountView.setTextColor(ContextCompat.getColor(context, R.color.colorBudgetDisplayBackground));
+        } else {
+            expenseViewHolder.expenseTypeView.setText(R.string.expense_tv);
+            String amountString = "- ₹" + String.valueOf(amount);
+            expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
+            expenseViewHolder.expenseAmountView.setTextColor(ContextCompat.getColor(context, R.color.colorExpense));
+
+
+        }
         // TODO: Check if an expense is recurring and add a TextView for the same
 
         // Set values
         expenseViewHolder.expenseDescriptionView.setText(description);
-        String amountString = "₹" + String.valueOf(amount);
-        expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
+
+
 //        expenseViewHolder.expenseTypeView.setText();
     }
 
@@ -84,7 +99,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
             expenseDescriptionView = itemView.findViewById(R.id.expense_description);
             expenseAmountView = itemView.findViewById(R.id.amount);
-//            expenseTypeView = itemView.findViewById(R.id.expense_type);
+            expenseTypeView = itemView.findViewById(R.id.expense_type);
             itemView.setOnClickListener(this);
         }
 

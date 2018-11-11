@@ -47,6 +47,8 @@
     <string name="edit_income_toolbar_title">Edit Income</string>
     <string name="set_monthly_income">Set monthly income</string>
     <string name="set_monthly_budget">Set monthly budget</string>
+    <string name="expense_tv">Expense</string>
+    <string name="income_tv">Income</string>
 
     <!-- ===================================================================================================== -->
 
