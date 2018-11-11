@@ -1,5 +1,6 @@
 package com.akshatsharma.dailyexpenselogger.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -23,5 +24,11 @@ public interface UserDao {
 
     @Query("SELECT savings FROM user")
     int loadSavings();
+
+    @Query("SELECT total_expenditure_this_month FROM user")
+    int loadTotalExpenditureThisMonth();
+
+    @Query("SELECT * FROM user")
+    LiveData<User> loadUserData();
 
 }

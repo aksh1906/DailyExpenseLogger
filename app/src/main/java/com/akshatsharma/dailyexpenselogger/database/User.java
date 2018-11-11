@@ -12,10 +12,12 @@ public class User {
     @ColumnInfo(name = "row_id")
     private int rowId;
     @ColumnInfo(name = "monthly_income")
-    private int monthlyIncome = 0;
+    private int monthlyIncome;
     @ColumnInfo(name = "monthly_budget")
-    private int monthlyBudget = 0;
-    private int savings = 0;
+    private int monthlyBudget;
+    private int savings;
+    @ColumnInfo(name = "total_expenditure_this_month")
+    private int totalExpenditureThisMonth;
 
     @Ignore
     public User(int monthlyIncome, int monthlyBudget, int savings) {
@@ -24,12 +26,21 @@ public class User {
         this.savings = savings;
     }
 
+    @Ignore
+    public User(int monthlyIncome, int monthlyBudget, int savings, int totalExpenditureThisMonth) {
+        this.monthlyIncome = monthlyIncome;
+        this.monthlyBudget = monthlyBudget;
+        this.savings = savings;
+        this.totalExpenditureThisMonth = totalExpenditureThisMonth;
+    }
 
-    public User(int rowId, int monthlyIncome, int monthlyBudget, int savings) {
+
+    public User(int rowId, int monthlyIncome, int monthlyBudget, int savings, int totalExpenditureThisMonth) {
         this.rowId = rowId;
         this.monthlyIncome = monthlyIncome;
         this.monthlyBudget = monthlyBudget;
         this.savings = savings;
+        this.totalExpenditureThisMonth = totalExpenditureThisMonth;
     }
 
     public int getRowId() {
@@ -64,7 +75,15 @@ public class User {
         this.savings = savings;
     }
 
+    public int getTotalExpenditureThisMonth() {
+        return totalExpenditureThisMonth;
+    }
+
+    public void setTotalExpenditureThisMonth(int totalExpenditureThisMonth) {
+        this.totalExpenditureThisMonth = totalExpenditureThisMonth;
+    }
+
     public static User populateData() {
-        return new User(0, 0, 0);
+        return new User(0, 0, 0, 0);
     }
 }

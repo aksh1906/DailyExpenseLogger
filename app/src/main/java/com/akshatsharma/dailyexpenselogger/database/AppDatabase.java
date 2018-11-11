@@ -36,6 +36,19 @@ public abstract class AppDatabase extends RoomDatabase {
                                 });
                             }
                         })
+                        .addCallback(new Callback() {
+                            @Override
+                            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                super.onCreate(db);
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getInstance(context).expenseDao().insertExpense(Expense.populateData());
+                                    }
+                                });
+                            }
+                        })
+                        .allowMainThreadQueries()
                         .fallbackToDestructiveMigration()
                         .build();
             }

@@ -25,6 +25,7 @@
     <string name="fab_menu_item_add_income">Add income</string>
     <string name="toolbar_title">Daily Expense Logger</string>
     <string name="edit_budget_dialog_title">Edit Budget</string>
+    <string name="budget_display">Remaining balance for this month: </string>
 
     <!-- ========================================================================== -->
 

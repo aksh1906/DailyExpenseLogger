@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
+import com.akshatsharma.dailyexpenselogger.database.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -175,26 +176,18 @@ public class AddExpenseActivity extends AppCompatActivity
                 DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        datePicker.setText(new StringBuilder().append(dayOfMonth).append("/").append(month + 1).append("/").append(year));
+                        String dayString = "0";
+                        if(dayOfMonth < 10) {
+                            dayString = "0" + String.valueOf(dayOfMonth);
+                        } else {
+                            dayString = String.valueOf(dayOfMonth);
+                        }
+                        datePicker.setText(new StringBuilder().append(dayString).append("/").append(month + 1).append("/").append(year));
                     }
                 }, year, month, day);
                 datePickerDialog.show();
                 break;
             }
-
-//            case R.id.et_expense_time:
-//                int hour, minute;
-//                Calendar c = Calendar.getInstance();
-//                hour = c.get(Calendar.HOUR_OF_DAY);
-//                minute = c.get(Calendar.MINUTE);
-//
-//                TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-//                    @Override
-//                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                        timePicker.setText(new StringBuilder().append(hourOfDay).append(":").append(minute));
-//                    }
-//                }, hour, minute, true);
-//                timePickerDialog.show();
 
             case R.id.btn_save_expense: {
                 saveExpense();
@@ -238,12 +231,21 @@ public class AddExpenseActivity extends AppCompatActivity
         final String date = datePicker.getText().toString();
 
         final Expense expense = new Expense(description, amount, date);
+
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
+                int income = database.userDao().loadIncome();
+                int budget = database.userDao().loadBudget();
+                int savings = database.userDao().loadSavings();
+                int expensesThisMonth = database.userDao().loadTotalExpenditureThisMonth();
+                User user = new User(1, income, budget, savings, expensesThisMonth);
                 if(expenseId == DEFAULT_EXPENSE_ID) {
                     // insert new expense
                     database.expenseDao().insertExpense(expense);
+                    expensesThisMonth += amount;
+                    user.setTotalExpenditureThisMonth(expensesThisMonth);
+                    database.userDao().updateUser(user);
                 } else {
                     // update expense
                     expense.setExpenseId(expenseId);

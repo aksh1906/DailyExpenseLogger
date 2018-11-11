@@ -11,24 +11,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <include
-        android:id="@+id/tbMainActivity"
-        layout="@layout/app_toolbar" />
+        <include
+            android:id="@+id/tbMainActivity"
+            layout="@layout/app_toolbar" />
 
-    <CalendarView
-        android:id="@+id/cv_calendar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:firstDayOfWeek="2" />
+        <CalendarView
+            android:id="@+id/cv_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:firstDayOfWeek="2"  />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_expenses"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:focusableInTouchMode="true"
-        android:focusable="true"/>
+        <TextView
+            android:id="@+id/tv_display_budget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:background="@color/colorBudgetDisplayBackground"
+            android:textColor="@color/colorFontLight"
+            android:textSize="14sp"
+            android:gravity="center"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_expenses"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbars="vertical"
+            android:focusableInTouchMode="true"
+            android:focusable="true"/>
 
     </LinearLayout>
 

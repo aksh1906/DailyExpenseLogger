@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
         implements ExpenseAdapter.ItemClickListener {
 
     private android.support.v7.widget.Toolbar toolbar;
-    private TextView toolbarTitle;
+    private TextView toolbarTitle, budgetDisplayTextView;
     private CalendarView calendarView;
     private RecyclerView recyclerView;
     private ExpenseAdapter adapter;
@@ -65,6 +65,10 @@ public class MainActivity extends AppCompatActivity
         initListeners();
         setupToolbar();
         setupRecyclerView();
+        // Initialize a database object
+        database = AppDatabase.getInstance(getApplicationContext());
+        showRemainingBudget();
+
 
 
         // Set date on the calendar to the current date, and set its visibility to gone by default
@@ -87,14 +91,15 @@ public class MainActivity extends AppCompatActivity
                     public void run() {
                         int position = viewHolder.getAdapterPosition();
                         List<Expense> expenses = adapter.getExpenses();
+                        int id = expenses.get(position).getExpenseId();
+                        int amount = expenses.get(position).getAmount();
+                        Log.d("amt", String.valueOf(amount));
+                        returnAmountToBudget(id, amount);
                         database.expenseDao().deleteExpense(expenses.get(position));
                     }
                 });
             }
         }).attachToRecyclerView(recyclerView);
-
-        // Initialize a database object
-        database = AppDatabase.getInstance(getApplicationContext());
 
         // Get expenses for the current date by default
         retrieveExpenses(getCurrentDate());
@@ -109,6 +114,7 @@ public class MainActivity extends AppCompatActivity
         floatingActionMenu = findViewById(R.id.fab_menu);
         fabAddExpense = findViewById(R.id.fab_menu_add_expense);
         fabAddIncome = findViewById(R.id.fab_menu_add_income);
+        budgetDisplayTextView = findViewById(R.id.tv_display_budget);
     }
 
     // This method initializes all the relevant listeners
@@ -146,6 +152,21 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         toolbarTitle.setText(R.string.toolbar_title);
+    }
+
+    // This method populates the remainingBudgetTextView with the user's remaining budget for the month
+    private void showRemainingBudget() {
+        LiveData<User> userData = database.userDao().loadUserData();
+        userData.observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(@Nullable User user) {
+                int monthlyBudget = user.getMonthlyBudget();
+                int totalExpenditureThisMonth = user.getTotalExpenditureThisMonth();
+                int remainingBudget = monthlyBudget - totalExpenditureThisMonth;
+                String budgetDisplay = getString(R.string.budget_display) + " ₹" + String.valueOf(remainingBudget);
+                budgetDisplayTextView.setText(budgetDisplay);
+            }
+        });
     }
 
     @Override
@@ -187,8 +208,9 @@ public class MainActivity extends AppCompatActivity
                                         int income = database.userDao().loadIncome();
                                         final int budget = database.userDao().loadBudget();
                                         int savings = database.userDao().loadSavings();
+                                        int totalExpenditureThisMonth = database.userDao().loadTotalExpenditureThisMonth();
                                         // The value of row id is always 1, since there is only one row in the table
-                                        final User user = new User(1, income, budget, savings);
+                                        final User user = new User(1, income, budget, savings, totalExpenditureThisMonth);
                                         int newBudget = Integer.parseInt(editBudgetEditText.getText().toString());
                                         user.setMonthlyBudget(newBudget);
                                         database.userDao().updateUser(user);
@@ -229,7 +251,8 @@ public class MainActivity extends AppCompatActivity
                                         int income = database.userDao().loadIncome();
                                         final int budget = database.userDao().loadBudget();
                                         int savings = database.userDao().loadSavings();
-                                        final User user = new User(1, income, budget, savings);
+                                        int totalExpenditureThisMonth = database.userDao().loadTotalExpenditureThisMonth();
+                                        final User user = new User(1, income, budget, savings, totalExpenditureThisMonth);
                                         int newIncome = Integer.parseInt(editIncomeEditText.getText().toString());
                                         user.setMonthlyIncome(newIncome);
                                         database.userDao().updateUser(user);
@@ -304,5 +327,39 @@ public class MainActivity extends AppCompatActivity
         String date = sdf.format(dt);
 
         return date;
+    }
+
+    private void returnAmountToBudget(final int expenseId, final int amount) {
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                int income = database.userDao().loadIncome();
+                int budget = database.userDao().loadBudget();
+                int savings = database.userDao().loadSavings();
+                int expensesThisMonth = database.userDao().loadTotalExpenditureThisMonth();
+                Log.d("suck a dick", String.valueOf(expensesThisMonth));
+                User user = new User(1, income, budget, savings, expensesThisMonth);
+                expensesThisMonth -= amount;
+                Log.d("suck a dick", String.valueOf(expensesThisMonth));
+                user.setTotalExpenditureThisMonth(expensesThisMonth);
+                database.userDao().updateUser(user);
+//                LiveData<User> user = database.userDao().loadUserData();
+//                user.observe(MainActivity.this, new Observer<User>() {
+//                    @Override
+//                    public void onChanged(@Nullable User user) {
+//                        int expensesThisMonth = user.getTotalExpenditureThisMonth();
+//                        Log.d("suck a dick", String.valueOf(expensesThisMonth));
+//                        expensesThisMonth -= amount;
+//                        Log.d("fuck this", String.valueOf(expensesThisMonth));
+//                        user.setTotalExpenditureThisMonth(expensesThisMonth);
+//                        database.userDao().updateUser(user);
+////                        user.setTotalExpenditureThisMonth(remainingBudget);
+////                        database.userDao().updateUser(user);
+//                    }
+//                });
+            }
+        });
+
     }
 }

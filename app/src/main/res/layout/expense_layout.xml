@@ -37,9 +37,10 @@
 
     <TextView
         android:id="@+id/amount"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="16sp"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginStart="8dp"

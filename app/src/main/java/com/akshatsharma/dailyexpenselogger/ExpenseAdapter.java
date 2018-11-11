@@ -46,7 +46,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
         // Set values
         expenseViewHolder.expenseDescriptionView.setText(description);
-        expenseViewHolder.expenseAmountView.setText(String.valueOf(amount));
+        String amountString = "₹" + String.valueOf(amount);
+        expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
 //        expenseViewHolder.expenseTypeView.setText();
     }
 

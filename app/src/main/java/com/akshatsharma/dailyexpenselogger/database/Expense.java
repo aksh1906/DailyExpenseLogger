@@ -76,4 +76,8 @@ public class Expense {
 //    public void setRecurringId(int recurringId) {
 //        this.recurringId = recurringId;
 //    }
+
+    public static Expense populateData() {
+        return new Expense("", 0, "");
+    }
 }
