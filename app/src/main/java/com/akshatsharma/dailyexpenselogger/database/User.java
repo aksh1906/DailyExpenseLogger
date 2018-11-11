@@ -4,65 +4,40 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
 
 @Entity(tableName = "user")
 public class User {
 
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "user_name")
-    @NonNull
-    private String userName;
-    @ColumnInfo(name = "first_name")
-    private String firstName;
-    @ColumnInfo(name = "last_name")
-    private String lastName;
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "row_id")
+    private int rowId;
     @ColumnInfo(name = "monthly_income")
-    private int monthlyIncome;
+    private int monthlyIncome = 0;
     @ColumnInfo(name = "monthly_budget")
-    private int monthlyBudget;
-    private int savings;
+    private int monthlyBudget = 0;
+    private int savings = 0;
 
     @Ignore
-    public User(String firstName, String lastName, int monthlyIncome, int monthlyBudget, int savings) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(int monthlyIncome, int monthlyBudget, int savings) {
         this.monthlyIncome = monthlyIncome;
         this.monthlyBudget = monthlyBudget;
         this.savings = savings;
     }
 
-    public User(String userName, String firstName, String lastName, int monthlyIncome, int monthlyBudget, int savings) {
-        this.userName =  userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
+
+    public User(int rowId, int monthlyIncome, int monthlyBudget, int savings) {
+        this.rowId = rowId;
         this.monthlyIncome = monthlyIncome;
         this.monthlyBudget = monthlyBudget;
         this.savings = savings;
     }
 
-    public String getUserName() {
-        return userName;
+    public int getRowId() {
+        return rowId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
     }
 
     public int getMonthlyIncome() {
@@ -87,5 +62,9 @@ public class User {
 
     public void setSavings(int savings) {
         this.savings = savings;
+    }
+
+    public static User populateData() {
+        return new User(0, 0, 0);
     }
 }

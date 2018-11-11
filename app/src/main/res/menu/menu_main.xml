@@ -4,14 +4,20 @@
 
     <item
         android:id="@+id/open_calendar"
-        android:title="Open Calendar"
+        android:title="@string/menu_open_calendar"
         android:orderInCategory="100"
         android:icon="@drawable/ic_calendar"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/edit_income"
+        android:title="@string/menu_edit_income"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/edit_budget"
-        android:title="Edit Budget"
+        android:title="@string/menu_edit_budget"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

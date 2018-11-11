@@ -14,6 +14,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
+import com.akshatsharma.dailyexpenselogger.database.User;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
@@ -42,8 +44,13 @@ public class MainActivity extends AppCompatActivity
     private CalendarView calendarView;
     private RecyclerView recyclerView;
     private ExpenseAdapter adapter;
-    FloatingActionMenu floatingActionMenu;
+    private FloatingActionMenu floatingActionMenu;
     private FloatingActionButton fabAddIncome, fabAddExpense;
+    private Context context;
+    private LayoutInflater layoutInflater;
+    private View view;
+    private AlertDialog.Builder alertDialogBuilder;
+    private AlertDialog alertDialog;
 
     private AppDatabase database;
 
@@ -157,21 +164,37 @@ public class MainActivity extends AppCompatActivity
                     calendarView.setVisibility(View.GONE);
                 }
                 break;
-            case R.id.edit_budget:
 
-                // Create the alertdialog which will allow the user to edit his monthly budget
-                Context context = MainActivity.this;
-                LayoutInflater layoutInflater = LayoutInflater.from(context);
-                View view = layoutInflater.inflate(R.layout.edit_budget_dialog, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+            case R.id.edit_budget:
+                // Create the AlertDialog which will allow the user to edit his monthly budget
+                context = MainActivity.this;
+                layoutInflater = LayoutInflater.from(context);
+                view = layoutInflater.inflate(R.layout.edit_budget_dialog, null);
+                alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setView(view);
 
+                final TextView editBudgetTextView = view.findViewById(R.id.tv_dialog_title);
                 final EditText editBudgetEditText = view.findViewById(R.id.et_edit_budget);
                 alertDialogBuilder.setCancelable(true)
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // get user input
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        // Update the monthly budget of the user
+                                        int income = database.userDao().loadIncome();
+                                        final int budget = database.userDao().loadBudget();
+                                        int savings = database.userDao().loadSavings();
+                                        // The value of row id is always 1, since there is only one row in the table
+                                        final User user = new User(1, income, budget, savings);
+                                        int newBudget = Integer.parseInt(editBudgetEditText.getText().toString());
+                                        user.setMonthlyBudget(newBudget);
+                                        database.userDao().updateUser(user);
+                                    }
+                                });
+
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -180,9 +203,52 @@ public class MainActivity extends AppCompatActivity
                                 dialog.cancel();
                             }
                         });
-                editBudgetEditText.setHint("Placeholder for amount");
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                editBudgetTextView.setText(R.string.set_monthly_budget);
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
+                break;
+
+            case R.id.edit_income:
+                // Create the AlertDialog which will allow the user to edit his monthly income
+                context = MainActivity.this;
+                layoutInflater = LayoutInflater.from(context);
+                view = layoutInflater.inflate(R.layout.edit_budget_dialog, null);
+                alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setView(view);
+
+                final TextView editIncomeTextView = view.findViewById(R.id.tv_dialog_title);
+                final EditText editIncomeEditText = view.findViewById(R.id.et_edit_budget);
+                alertDialogBuilder.setCancelable(true)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        // Update the monthly income of the user
+                                        int income = database.userDao().loadIncome();
+                                        final int budget = database.userDao().loadBudget();
+                                        int savings = database.userDao().loadSavings();
+                                        final User user = new User(1, income, budget, savings);
+                                        int newIncome = Integer.parseInt(editIncomeEditText.getText().toString());
+                                        user.setMonthlyIncome(newIncome);
+                                        database.userDao().updateUser(user);
+                                    }
+                                });
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                editIncomeTextView.setText(R.string.set_monthly_income);
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -228,7 +294,6 @@ public class MainActivity extends AppCompatActivity
         calendar.set(Calendar.YEAR, year);
         Date dt = calendar.getTime();
         String date = sdf.format(dt);
-        Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
         return date;
     }
 
@@ -237,7 +302,6 @@ public class MainActivity extends AppCompatActivity
         Date dt = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String date = sdf.format(dt);
-        Toast.makeText(this, date, Toast.LENGTH_LONG).show();
 
         return date;
     }

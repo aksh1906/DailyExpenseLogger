@@ -84,6 +84,7 @@ public class AddExpenseActivity extends AppCompatActivity
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra(EXTRA_EXPENSE_ID)) {
             saveButton.setText(R.string.update_button);
+            toolbarTitle.setText(R.string.edit_expense_toolbar_title);
             if(expenseId == DEFAULT_EXPENSE_ID) {
                 expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, DEFAULT_EXPENSE_ID);
 

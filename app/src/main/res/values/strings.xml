@@ -42,6 +42,16 @@
     <string name="expense_toolbar_title">Add Expense</string>
     <string name="income_toolbar_title">Add Income</string>
     <string name="update_button">Update</string>
+    <string name="edit_expense_toolbar_title">Edit Expense</string>
+    <string name="edit_income_toolbar_title">Edit Income</string>
+    <string name="set_monthly_income">Set monthly income</string>
+    <string name="set_monthly_budget">Set monthly budget</string>
 
     <!-- ===================================================================================================== -->
+
+    <!-- ============================== menu_main.xml ============================= -->
+    <string name="menu_open_calendar">Open Calendar</string>
+    <string name="menu_edit_income">Set income</string>
+    <string name="menu_edit_budget">Set budget</string>
+    <!-- ========================================================================== -->
 </resources>
