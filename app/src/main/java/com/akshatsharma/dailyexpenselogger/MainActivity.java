@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity
                         List<Expense> expenses = adapter.getExpenses();
                         int id = expenses.get(position).getExpenseId();
                         int amount = expenses.get(position).getAmount();
-                        Log.d("amt", String.valueOf(amount));
                         returnAmountToBudget(id, amount);
                         database.expenseDao().deleteExpense(expenses.get(position));
                     }
@@ -338,26 +337,10 @@ public class MainActivity extends AppCompatActivity
                 int budget = database.userDao().loadBudget();
                 int savings = database.userDao().loadSavings();
                 int expensesThisMonth = database.userDao().loadTotalExpenditureThisMonth();
-                Log.d("suck a dick", String.valueOf(expensesThisMonth));
                 User user = new User(1, income, budget, savings, expensesThisMonth);
                 expensesThisMonth -= amount;
-                Log.d("suck a dick", String.valueOf(expensesThisMonth));
                 user.setTotalExpenditureThisMonth(expensesThisMonth);
                 database.userDao().updateUser(user);
-//                LiveData<User> user = database.userDao().loadUserData();
-//                user.observe(MainActivity.this, new Observer<User>() {
-//                    @Override
-//                    public void onChanged(@Nullable User user) {
-//                        int expensesThisMonth = user.getTotalExpenditureThisMonth();
-//                        Log.d("suck a dick", String.valueOf(expensesThisMonth));
-//                        expensesThisMonth -= amount;
-//                        Log.d("fuck this", String.valueOf(expensesThisMonth));
-//                        user.setTotalExpenditureThisMonth(expensesThisMonth);
-//                        database.userDao().updateUser(user);
-////                        user.setTotalExpenditureThisMonth(remainingBudget);
-////                        database.userDao().updateUser(user);
-//                    }
-//                });
             }
         });
 
