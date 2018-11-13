@@ -20,4 +20,16 @@
         android:title="@string/menu_edit_budget"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
+    <item
+      android:id="@+id/check_savings"
+        android:title="@string/menu_check_savings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/expenses_by_category"
+        android:title="See Expenses by category"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

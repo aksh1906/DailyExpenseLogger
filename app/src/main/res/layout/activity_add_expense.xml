@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".AddExpenseActivity"
-    android:orientation="vertical">
+    tools:context=".AddExpenseActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <include
         android:id="@+id/tbCreateExpense"
@@ -19,7 +24,7 @@
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         android:paddingTop="24dp"
-        android:paddingBottom="24dp"
+        android:paddingBottom="40dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:checked="false"
@@ -49,7 +54,7 @@
             android:maxLines="2"
             android:textColor="@color/colorFont"
             android:hint="@string/expense_description_hint"
-            android:inputType="text"
+            android:inputType="textCapWords"
             android:focusableInTouchMode="true"
             android:focusable="true"
             />
@@ -201,18 +206,19 @@
             android:gravity="center"
             android:visibility="invisible"/>
     </LinearLayout>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_save_expense"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_save_expense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_rounded_corners"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:text="@string/save_button"
-        android:textSize="16sp"
-        android:textColor="@color/colorFontLight"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="32dp"/>
+        android:clickable="true"
+        android:layout_margin="16dp"
+        app:fabSize="normal"
+        android:focusable="true"
+        android:src="@drawable/ic_save"
+        app:layout_anchor="@id/switch_recurring_expense"
+        app:layout_anchorGravity="bottom|right|end"
+        />
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

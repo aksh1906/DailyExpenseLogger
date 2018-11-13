@@ -26,6 +26,7 @@
     <string name="toolbar_title">Daily Expense Logger</string>
     <string name="edit_budget_dialog_title">Edit Budget</string>
     <string name="budget_display">Remaining balance for this month: </string>
+    <string name="savings_title">Current Savings: </string>
 
     <!-- ========================================================================== -->
 
@@ -54,7 +55,8 @@
 
     <!-- ============================== menu_main.xml ============================= -->
     <string name="menu_open_calendar">Open Calendar</string>
-    <string name="menu_edit_income">Set income</string>
-    <string name="menu_edit_budget">Set budget</string>
+    <string name="menu_edit_income">Set monthly income</string>
+    <string name="menu_edit_budget">Set monthly budget</string>
+    <string name="menu_check_savings">Check savings</string>
     <!-- ========================================================================== -->
 </resources>

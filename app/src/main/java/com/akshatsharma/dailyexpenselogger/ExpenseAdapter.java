@@ -42,15 +42,19 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         // Determine the values of the wanted data
         Expense expense = expenses.get(position);
         String description = expense.getDescription();
+        String category = expense.getCategory();
+        if(category == null) {
+            category = "";
+        }
         int amount = expense.getAmount();
         if(amount < 0) {
-            expenseViewHolder.expenseTypeView.setText(R.string.income_tv);
+            expenseViewHolder.expenseTypeView.setText(category);
             amount *= -1;
             String amountString = "+ ₹" + String.valueOf(amount);
             expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
             expenseViewHolder.expenseAmountView.setTextColor(ContextCompat.getColor(context, R.color.colorBudgetDisplayBackground));
         } else {
-            expenseViewHolder.expenseTypeView.setText(R.string.expense_tv);
+            expenseViewHolder.expenseTypeView.setText(category);
             String amountString = "- ₹" + String.valueOf(amount);
             expenseViewHolder.expenseAmountView.setText(String.valueOf(amountString));
             expenseViewHolder.expenseAmountView.setTextColor(ContextCompat.getColor(context, R.color.colorExpense));

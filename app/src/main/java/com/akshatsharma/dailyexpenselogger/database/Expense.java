@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.Nullable;
 
 import java.util.Date;
 
@@ -17,23 +18,26 @@ public class Expense {
     private String description;
     private int amount;
     private String date;
+    private String category;
 //    @ColumnInfo(name = "recurring_id")
 //    private int recurringId;
 
     @Ignore
-    public Expense(String description, int amount, String date) {
+    public Expense(String description, int amount, String date, String category) {
         this.description = description;
         this.amount = amount;
         this.date = date;
+        this.category = category;
 //        this.recurringId = recurringId;
     }
 
 //    @Ignore
-    public Expense(int expenseId, String description, int amount, String date/*, int recurringId*/) {
+    public Expense(int expenseId, String description, int amount, String date, String category/*, int recurringId*/) {
         this.expenseId = expenseId;
         this.description = description;
         this.amount = amount;
         this.date = date;
+        this.category = category;
 //        this.recurringId = recurringId;
     }
 
@@ -69,7 +73,15 @@ public class Expense {
         this.date = date;
     }
 
-//    public int getRecurringId() {
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    //    public int getRecurringId() {
 //        return recurringId;
 //    }
 //
@@ -78,6 +90,6 @@ public class Expense {
 //    }
 
     public static Expense populateData() {
-        return new Expense("", 0, "");
+        return new Expense("", 0, "", null);
     }
 }

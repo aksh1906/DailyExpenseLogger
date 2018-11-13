@@ -6,6 +6,8 @@ import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,14 +23,17 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akshatsharma.dailyexpenselogger.database.AppDatabase;
 import com.akshatsharma.dailyexpenselogger.database.Expense;
+import com.akshatsharma.dailyexpenselogger.database.ExpenseCategory;
 import com.akshatsharma.dailyexpenselogger.database.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -49,7 +54,7 @@ public class AddExpenseActivity extends AppCompatActivity
     private TextView dateLabel, timeLabel, toolbarTitle;
     private View convenienceView;
     private LinearLayout frequencyLL;
-    private Button saveButton;
+    private FloatingActionButton saveButton;
 
     private int expenseId = DEFAULT_EXPENSE_ID;
 
@@ -81,7 +86,7 @@ public class AddExpenseActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra(EXTRA_EXPENSE_ID)) {
-            saveButton.setText(R.string.update_button);
+//            saveButton.setText(R.string.update_button);
             toolbarTitle.setText(R.string.edit_expense_toolbar_title);
             if(expenseId == DEFAULT_EXPENSE_ID) {
                 expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, DEFAULT_EXPENSE_ID);
@@ -130,7 +135,7 @@ public class AddExpenseActivity extends AppCompatActivity
         frequencyLL = findViewById(R.id.ll_frequency);
         dateLabel = findViewById(R.id.tv_date_label);
         timeLabel = findViewById(R.id.tv_time_label);
-        saveButton = findViewById(R.id.btn_save_expense);
+        saveButton = findViewById(R.id.fab_save_expense);
     }
 
     // This creates the toolbar and adds the title
@@ -199,7 +204,7 @@ public class AddExpenseActivity extends AppCompatActivity
                 break;
             }
 
-            case R.id.btn_save_expense: {
+            case R.id.fab_save_expense: {
                 saveExpense();
                 break;
             }
@@ -240,31 +245,60 @@ public class AddExpenseActivity extends AppCompatActivity
         final int amount = Integer.parseInt(amountEditText.getText().toString());
         final String date = datePicker.getText().toString();
 
-        final Expense expense = new Expense(description, amount, date);
+        final Expense expense = new Expense(description, amount, date, null);
+
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
+                List<String> categoryList = database.expenseCategoryDao().getAllItems();
+                for (String category: categoryList) {
+                    if(category.equals(description)) {
+                        String expenseCategory = database.expenseCategoryDao().loadCategoryByItemName(category);
+                        expense.setCategory(expenseCategory);
+                    }
+                }
                 int income = database.userDao().loadIncome();
                 int budget = database.userDao().loadBudget();
                 int savings = database.userDao().loadSavings();
                 int expensesThisMonth = database.userDao().loadTotalExpenditureThisMonth();
+                int remainingBudget = budget - expensesThisMonth;
                 User user = new User(1, income, budget, savings, expensesThisMonth);
                 if(expenseId == DEFAULT_EXPENSE_ID) {
                     // insert new expense
-                    database.expenseDao().insertExpense(expense);
-                    expensesThisMonth += amount;
-                    user.setTotalExpenditureThisMonth(expensesThisMonth);
-                    database.userDao().updateUser(user);
+                    if(amount > remainingBudget) {
+                        database.expenseDao().insertExpense(expense);
+                        expensesThisMonth += remainingBudget;
+                        savings -= (amount - remainingBudget);
+                        user.setTotalExpenditureThisMonth(expensesThisMonth);
+                        user.setSavings(savings);
+                        database.userDao().updateUser(user);
+                    } else {
+                        database.expenseDao().insertExpense(expense);
+                        expensesThisMonth += amount;
+                        user.setTotalExpenditureThisMonth(expensesThisMonth);
+                        database.userDao().updateUser(user);
+                    }
                 } else {
                     // update expense
                     int originalExpense = database.expenseDao().loadExpense(expenseId).getAmount();
                     int difference = amount - originalExpense;
-                    expensesThisMonth += difference;
-                    user.setTotalExpenditureThisMonth(expensesThisMonth);
-                    database.userDao().updateUser(user);
-                    expense.setExpenseId(expenseId);
-                    database.expenseDao().updateExpense(expense);
+                    if(difference > remainingBudget) {
+                        expense.setExpenseId(expenseId);
+                        expense.setAmount(amount);
+                        database.expenseDao().updateExpense(expense);
+                        expensesThisMonth += remainingBudget;
+                        savings -= (difference - remainingBudget);
+                        user.setTotalExpenditureThisMonth(expensesThisMonth);
+                        user.setSavings(savings);
+                        database.userDao().updateUser(user);
+                    } else {
+                        expensesThisMonth += difference;
+                        user.setTotalExpenditureThisMonth(expensesThisMonth);
+                        database.userDao().updateUser(user);
+                        expense.setExpenseId(expenseId);
+                        database.expenseDao().updateExpense(expense);
+                    }
                 }
                 finish();
             }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -66,7 +67,9 @@ public class MainActivity extends AppCompatActivity
         setupRecyclerView();
         // Initialize a database object
         database = AppDatabase.getInstance(getApplicationContext());
+        checkForStartOfMonth();
         showRemainingBudget();
+
 
 
 
@@ -162,6 +165,12 @@ public class MainActivity extends AppCompatActivity
                 int totalExpenditureThisMonth = user.getTotalExpenditureThisMonth();
                 int remainingBudget = monthlyBudget - totalExpenditureThisMonth;
                 String budgetDisplay = getString(R.string.budget_display) + " ₹" + String.valueOf(remainingBudget);
+                if(remainingBudget <= 0) {
+                    budgetDisplayTextView.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorExpense));
+                    budgetDisplay += "! Money being deducted from savings!";
+                } else {
+                    budgetDisplayTextView.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBudgetDisplayBackground));
+                }
                 budgetDisplayTextView.setText(budgetDisplay);
             }
         });
@@ -210,6 +219,7 @@ public class MainActivity extends AppCompatActivity
                                         // The value of row id is always 1, since there is only one row in the table
                                         final User user = new User(1, income, budget, savings, totalExpenditureThisMonth);
                                         int newBudget = Integer.parseInt(editBudgetEditText.getText().toString());
+                                        user.setSavings(income - newBudget);
                                         user.setMonthlyBudget(newBudget);
                                         database.userDao().updateUser(user);
                                     }
@@ -224,6 +234,8 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
                 editBudgetTextView.setText(R.string.set_monthly_budget);
+                int currentBudget = database.userDao().loadBudget();
+                editBudgetEditText.setHint("Current Budget: ₹" + currentBudget);
                 alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
                 break;
@@ -252,6 +264,7 @@ public class MainActivity extends AppCompatActivity
                                         int totalExpenditureThisMonth = database.userDao().loadTotalExpenditureThisMonth();
                                         final User user = new User(1, income, budget, savings, totalExpenditureThisMonth);
                                         int newIncome = Integer.parseInt(editIncomeEditText.getText().toString());
+                                        user.setSavings(newIncome - budget);
                                         user.setMonthlyIncome(newIncome);
                                         database.userDao().updateUser(user);
                                     }
@@ -266,10 +279,74 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
                 editIncomeTextView.setText(R.string.set_monthly_income);
+                int currentIncome = database.userDao().loadIncome();
+                editIncomeEditText.setHint("Current Income: ₹" + currentIncome);
                 alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
                 break;
 
+            case R.id.check_savings:
+                context = MainActivity.this;
+                layoutInflater = LayoutInflater.from(context);
+                view = layoutInflater.inflate(R.layout.check_savings_dialog, null);
+                alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setView(view);
+
+                final TextView savingsTitleTextView = view.findViewById(R.id.tv_savings_dialog_title);
+                final TextView savingsAmountTextView = view.findViewById(R.id.tv_savings_dialog_amt);
+                alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                savingsTitleTextView.setText(R.string.savings_title);
+                int savings = database.userDao().loadSavings();
+                String savingsString = "₹" + String.valueOf(savings);
+                savingsAmountTextView.setText(savingsString);
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                break;
+
+            case R.id.expenses_by_category:
+                context = MainActivity.this;
+                layoutInflater = LayoutInflater.from(context);
+                view = layoutInflater.inflate(R.layout.show_category_expenses, null);
+                alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setView(view);
+
+                final TextView foodTitleTextView = view.findViewById(R.id.tv_food_expenses);
+                final TextView foodAmountTextView = view.findViewById(R.id.tv_food_amount);
+                final TextView travelTitleTextView = view.findViewById(R.id.tv_travel_expenses);
+                final TextView travelAmountTextView = view.findViewById(R.id.tv_travel_amount);
+                alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+
+                            }
+                        });
+                foodTitleTextView.setText("Food Expenses");
+                travelTitleTextView.setText("Travel Expenses");
+                int[] foodExpenses = database.expenseDao().getAmountByCategory("Food");
+                int[] travelExpenses = database.expenseDao().getAmountByCategory("Travel");
+                int totalFoodExpenses = 0;
+                int totalTravelExpenses = 0;
+                for (int foodExpense: foodExpenses) {
+                    totalFoodExpenses += foodExpense;
+                }
+                for(int travelExpense: travelExpenses) {
+                    totalTravelExpenses += travelExpense;
+                }
+
+                foodAmountTextView.setText(String.valueOf(totalFoodExpenses));
+                travelAmountTextView.setText(String.valueOf(totalTravelExpenses));
+
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -304,15 +381,6 @@ public class MainActivity extends AppCompatActivity
         int amount = expense.getAmount();
         Log.d("amt", String.valueOf(amount));
         openActivityToEditValue(itemId, amount);
-        // Start AddExpenseActivity, while adding the ItemId as an extra in the intent
-//        LiveData<Expense> expense = database.expenseDao().loadExpenseById(itemId);
-//        expense.observe(this, new Observer<Expense>() {
-//            @Override
-//            public void onChanged(@Nullable Expense expense) {
-//                int amount = expense.getAmount();
-//                openActivityToEditValue(itemId, amount);
-//            }
-//        });
     }
 
     private String convertToDateString(int dayOfMonth, int month, int year) {
@@ -361,6 +429,30 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, AddIncomeActivity.class);
             intent.putExtra(AddIncomeActivity.EXTRA_EXPENSE_ID, itemId);
             startActivity(intent);
+        }
+    }
+
+    private void checkForStartOfMonth() {
+        final Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+        String dayOfMonth = sdf.format(date);
+        Log.d("date",dayOfMonth);
+        if(dayOfMonth.equals("01")) {
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    int budget = database.userDao().loadBudget();
+                    int income = database.userDao().loadIncome();
+                    int savings = database.userDao().loadSavings();
+                    int expensesThisMonth = database.userDao().loadTotalExpenditureThisMonth();
+                    int remainingBudget = budget - expensesThisMonth;
+                    savings += remainingBudget;
+                    User user = new User(income, budget, savings, expensesThisMonth);
+                    user.setSavings(savings);
+                    user.setTotalExpenditureThisMonth(0);
+                    database.userDao().updateUser(user);
+                }
+            });
         }
     }
 }

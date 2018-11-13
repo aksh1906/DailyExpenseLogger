@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,4 +32,9 @@ public interface ExpenseDao {
 
     @Query("SELECT * FROM expense WHERE expense_id = :id")
     Expense loadExpense(int id);
+
+    @Query("SELECT amount FROM expense WHERE category = :category")
+    int[] getAmountByCategory(String category);
+
+
 }

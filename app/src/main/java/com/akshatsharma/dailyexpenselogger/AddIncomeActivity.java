@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,7 @@ public class AddIncomeActivity extends AppCompatActivity
     private TextView dateLabel, timeLabel, toolbarTitle;
     private View convenienceView;
     private LinearLayout frequencyLL;
-    private Button saveButton;
+    private FloatingActionButton saveButton;
 
     private int expenseId = DEFAULT_EXPENSE_ID;
 
@@ -76,7 +77,7 @@ public class AddIncomeActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra(EXTRA_EXPENSE_ID)) {
-            saveButton.setText(R.string.update_button);
+//            saveButton.setText(R.string.update_button);
             toolbarTitle.setText(R.string.edit_income_toolbar_title);
             if(expenseId == DEFAULT_EXPENSE_ID) {
                 expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, DEFAULT_EXPENSE_ID);
@@ -105,7 +106,7 @@ public class AddIncomeActivity extends AppCompatActivity
         frequencyLL = findViewById(R.id.ll_frequency);
         dateLabel = findViewById(R.id.tv_date_label);
         timeLabel = findViewById(R.id.tv_time_label);
-        saveButton = findViewById(R.id.btn_save_income);
+        saveButton = findViewById(R.id.fab_save_income);
     }
 
     // This creates the title and adds the toolbar
@@ -165,7 +166,7 @@ public class AddIncomeActivity extends AppCompatActivity
                 datePickerDialog.show();
                 break;
 
-            case R.id.btn_save_income:
+            case R.id.fab_save_income:
                 saveIncome();
                 break;
         }
@@ -214,7 +215,7 @@ public class AddIncomeActivity extends AppCompatActivity
         final int amount = (Integer.parseInt(amountEditText.getText().toString())) * -1;
         final String date = datePicker.getText().toString();
 
-        final Expense income = new Expense(description, amount, date);
+        final Expense income = new Expense(description, amount, date, null);
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override

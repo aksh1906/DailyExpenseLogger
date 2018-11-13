@@ -11,7 +11,7 @@ import com.akshatsharma.dailyexpenselogger.AppExecutors;
 
 import java.util.concurrent.Executors;
 
-@Database(entities = {Expense.class, RecurringExpense.class, User.class}, version = 1, exportSchema = false)
+@Database(entities = {Expense.class, RecurringExpense.class, User.class, ExpenseCategory.class}, version = 1, exportSchema = false)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -48,6 +48,18 @@ public abstract class AppDatabase extends RoomDatabase {
                                 });
                             }
                         })
+                        .addCallback(new Callback() {
+                            @Override
+                            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                super.onCreate(db);
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getInstance(context).expenseCategoryDao().insertAll(ExpenseCategory.populateData());
+                                    }
+                                });
+                            }
+                        })
                         .allowMainThreadQueries()
                         .fallbackToDestructiveMigration()
                         .build();
@@ -59,4 +71,5 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExpenseDao expenseDao();
     public abstract RecurringExpenseDao recurringExpenseDao();
     public abstract UserDao userDao();
+    public abstract ExpenseCategoryDao expenseCategoryDao();
 }
